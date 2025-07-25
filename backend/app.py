@@ -1,12 +1,16 @@
 from flask import Flask, request, send_file, jsonify
+from flask_cors import CORS
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')
 import pandas as pd
 import io 
 
 from runge_kutta import circuit_model, runge_kutta_4
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/runge_kutta_img', methods=['GET'])
 def runge_kutta_img():
