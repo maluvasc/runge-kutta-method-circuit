@@ -1,0 +1,10 @@
+services:
+  web:
+    build: . 
+    container_name: runge_kutta_calculator 
+    ports:
+      - "5000:5000" 
+    volumes:
+      - .:/app 
+    environment:
+    command: flask run --host=0.0.0.0

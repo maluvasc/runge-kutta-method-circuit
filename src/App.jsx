@@ -10,146 +10,88 @@ import ShapeC from "./assets/C";
 import ShapeV from "./assets/V";
 
 function App() {
-  const [position, setPosition] = useState({ x: 200, y: 200 });
-  const [shapeRPos, setShapeRPos] = useState({ x: 550, y: 250 });
-  const [shapeLPos, setShapeLPos] = useState({ x: 500, y: 400 });
-  const [shapeCPos, setShapeCPos] = useState({ x: 500, y: 580 });
-  const plateLength = 20;
-  const plateGap = 10;
+  const [imgSrc, setImgSrc] = useState(null);
+  const [params, setParams] = useState({
+    R: 0,
+    L: 0,
+    C: 0,
+    source_type: "DC",
+    dc_voltage: 0,
+    ac_amplitude: 0,
+    ac_frequency: 0,
+  });
+
+   // Atualiza os params ao mudar o input
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setParams((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // Simulador
+  const handleSimulate = async () => {
+    // Monta a query string para a URL da API
+    const query = new URLSearchParams();
+
+    query.append("R", params.R);
+    query.append("L", params.L);
+    query.append("C", params.C);
+    query.append("source_type", params.source_type);
+
+    if (params.source_type === "DC") {
+      query.append("dc_voltage", params.dc_voltage);
+    } else {
+      query.append("ac_amplitude", params.ac_amplitude);
+      query.append("ac_frequency", params.ac_frequency);
+    }
+
+    const url = `http://127.0.0.1:5000/runge_kutta_img?${query.toString()}`;
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        const errorData = await response.json();
+        alert("Erro na simulação: " + (errorData.error || "Erro desconhecido"));
+        return;
+      }
+      // Pega o blob da imagem PNG
+      const blob = await response.blob();
+      // Cria URL local para a imagem
+      const imageObjectURL = URL.createObjectURL(blob);
+      setImgSrc(imageObjectURL);
+    } catch (err) {
+      alert("Erro na comunicação com o servidor: " + err.message);
+    }
+  };
+
   return (
     <>
-      <NavScroll />
+      <NavScroll 
+        params={params}
+        handleChange={handleChange}
+        handleSimulate={handleSimulate}
+      />
+
+      {/* Mostra a imagem da simulação */}
+      <div style={{ marginTop: "20px", textAlign: "center" }}>
+        {imgSrc && (
+          <img
+            src={imgSrc}
+            alt="Simulação Corrente vs Tempo"
+            style={{
+              maxWidth: "90vw",
+              maxHeight: "70vh",
+              border: "2px solid red"
+          }}
+        />
+      )}
+
+      </div>
+
       <Stage width={window.innerWidth} height={window.innerHeight}>
         <Layer>
-          <Line
-            points={[position.x, position.y, position.x + 300, position.y]}
-            stroke="black"
-            strokeWidth={4}
-          />
-          <Line
-            points={[position.x, position.y, position.x, position.y + 200]}
-            stroke="black"
-            strokeWidth={4}
-          />
-          <Line
-            points={[position.x, position.y + 300, position.x, position.y + 500]}
-            stroke="black"
-            strokeWidth={4}
-          />
-          <Line
-            points={[
-              position.x + 300,
-              position.y + 500,
-              position.x,
-              position.y + 500,
-            ]}
-            stroke="black"
-            strokeWidth={4}
-          />
-          <Line
-            points={[
-              position.x + 300,
-              position.y,
-              position.x + 300,
-              position.y + 60,
-            ]}
-            stroke="black"
-            strokeWidth={4}
-          />
-          <Line
-            points={[
-              position.x + 300,
-              position.y + 120,
-              position.x + 300,
-              position.y + 200,
-            ]}
-            stroke="black"
-            strokeWidth={4}
-          />
-          <Line
-            points={[
-              position.x + 300,
-              position.y + 280,
-              position.x + 300,
-              position.y + 360,
-            ]}
-            stroke="black"
-            strokeWidth={4}
-          />
-          <ShapeR x={shapeRPos.x} y={shapeRPos.y} />
-          <Text
-            x={shapeRPos.x - 20}
-            y={shapeRPos.y + 30}
-            text="R"
-            fontSize={20}
-            fontStyle="bold"
-            fill="black"
-          />
-          <ShapeL
-            x={shapeLPos.x}
-            y={shapeLPos.y}
-            height={80}
-            width={20}
-            onMouseEnter={() => (document.body.style.cursor = "pointer")}
-            onMouseLeave={() => (document.body.style.cursor = "default")}
-          />
-          <Text
-            x={shapeLPos.x + 30}
-            y={shapeLPos.y + 30}
-            text="L"
-            fontSize={20}
-            fontStyle="bold"
-            fill="black"
-          />
-          <Line
-            points={[
-              shapeCPos.x,
-              shapeCPos.y - 30,
-              shapeCPos.x,
-              shapeCPos.y - plateLength,
-            ]}
-            stroke="black"
-            strokeWidth={4}
-          />
-          <Line
-            points={[
-              shapeCPos.x - 20,
-              shapeCPos.y - plateLength,
-              shapeCPos.x + 20,
-              shapeCPos.y - plateLength,
-            ]}
-            stroke="black"
-            strokeWidth={4}
-          />
-          <Line
-            points={[
-              shapeCPos.x - 20,
-              shapeCPos.y + 20 - plateLength,
-              shapeCPos.x + 20,
-              shapeCPos.y + 20 - plateLength,
-            ]}
-            stroke="black"
-            strokeWidth={4}
-          />
-          <Line
-            points={[
-              position.x + 300,
-              position.y + 380,
-              position.x + 300,
-              position.y + 500,
-            ]}
-            stroke="black"
-            strokeWidth={4}
-          />
-          <Text
-            x={shapeCPos.x + 30}
-            y={shapeCPos.y - 15}
-            text="C"
-            fontSize={20}
-            fontStyle="bold"
-            fill="black"
-          />
-          <ShapeV x={200} y={450} />
         </Layer>
       </Stage>
     </>
