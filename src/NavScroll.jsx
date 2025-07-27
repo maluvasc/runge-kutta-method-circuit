@@ -22,6 +22,17 @@ function NavScroll({ params, handleChange, handleSimulate }) {
         <Navbar.Collapse id="navbarScroll">
           <Nav className="me-auto my-2 my-lg-0" navbarScroll>
             <Form className="d-flex align-items-center me-2">
+              <Form.Label className="me-1 mb-0">Tempo da simulação em segundos:</Form.Label>
+              <Form.Control
+                type="number"
+                name="simulation_time_end"
+                value={params.simulation_time_end}
+                onChange={handleChange}
+                style={{ width: "80px" }}
+              />
+            </Form>
+            
+            <Form className="d-flex align-items-center me-2">
               <Form.Label className="me-1 mb-0">R:</Form.Label>
               <Form.Control
                 type="number"

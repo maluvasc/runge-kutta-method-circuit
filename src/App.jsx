@@ -19,6 +19,7 @@ function App() {
     dc_voltage: 0,
     ac_amplitude: 0,
     ac_frequency: 0,
+    simulation_time_end: 0,
   });
 
    // Atualiza os params ao mudar o input
@@ -39,6 +40,7 @@ function App() {
     query.append("L", params.L);
     query.append("C", params.C);
     query.append("source_type", params.source_type);
+    query.append("simulation_time_end", params.simulation_time_end)
 
     if (params.source_type === "DC") {
       query.append("dc_voltage", params.dc_voltage);
