@@ -1,10 +1,25 @@
 services:
-  web:
-    build: . 
-    container_name: runge_kutta_calculator 
+  backend:
+    build: ./backend
+    container_name: runge_kutta_calculator
     ports:
-      - "5000:5000" 
+      - "5000:5000"
     volumes:
-      - .:/app 
+      - ./backend:/app
     environment:
+      - FLASK_APP=app.py
+      - FLASK_DEBUG=1
     command: flask run --host=0.0.0.0
+
+  frontend:
+    container_name: rlc_frontend
+    build:
+      context: .
+      dockerfile: frontend.Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - backend
