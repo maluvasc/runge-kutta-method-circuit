@@ -11,6 +11,7 @@ import ShapeV from "./assets/V";
 
 function App() {
   const [imgSrc, setImgSrc] = useState(null);
+  const [loadingBoolean, setLoadingBoolean] = useState(null);
   const [params, setParams] = useState({
     R: 0,
     L: 0,
@@ -33,6 +34,9 @@ function App() {
 
   // Simulador
   const handleSimulate = async () => {
+    setLoadingBoolean(true);
+    setImgSrc(null);
+
     // Monta a query string para a URL da API
     const query = new URLSearchParams();
 
@@ -63,6 +67,7 @@ function App() {
       // Cria URL local para a imagem
       const imageObjectURL = URL.createObjectURL(blob);
       setImgSrc(imageObjectURL);
+      setLoadingBoolean(false);
     } catch (err) {
       alert("Erro na comunicação com o servidor: " + err.message);
     }
@@ -78,7 +83,7 @@ function App() {
 
       {/* Mostra a imagem da simulação */}
       <div style={{ marginTop: "20px", textAlign: "center" }}>
-        {imgSrc && (
+        {(imgSrc && (
           <img
             src={imgSrc}
             alt="Simulação Corrente vs Tempo"
@@ -88,10 +93,11 @@ function App() {
               border: "2px solid red"
           }}
         />
-      )}
-
+      )) ?? (loadingBoolean && (
+        <><img src="/public/loading.gif" alt="Loading..." style={{ width: "200px", height: "200px" }} /><p>Gerando a simulação...</p></>
+      )) 
+      } 
       </div>
-
       <Stage width={window.innerWidth} height={window.innerHeight}>
         <Layer>
         </Layer>
