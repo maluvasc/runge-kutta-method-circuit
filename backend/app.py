@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('Agg')
-import pandas as Spd
+import pandas as pd
 import io 
 
 from runge_kutta import circuit_model, runge_kutta_4
